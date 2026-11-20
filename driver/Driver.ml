@@ -189,6 +189,8 @@ Processing options:
   -Os            Optimize for code size in preference to code speed
   -Obranchless   Optimize to generate fewer conditional branches; try to produce
                  branch-free instruction sequences as much as possible
+  -fsumclosed    Replace supported summation loops by a closed form [on]
+  -faccumrec     Optimize supported integer accumulator recursion [on]
   -ftailcalls    Optimize function calls in tail position [on]
   -fconst-prop   Perform global constant propagation  [on]
   -ffloat-const-prop <n>  Control constant propagation of floats
@@ -250,7 +252,7 @@ let dump_mnemonics destfile =
   exit 0
 
 let optimization_options = [
-  option_ftailcalls; option_fifconversion; option_fconstprop; option_fcse;
+  option_faccumrec; option_fsumclosed; option_ftailcalls; option_fifconversion; option_fconstprop; option_fcse;
   option_fredundancy; option_finline; option_finline_functions_called_once;
 ]
 
@@ -381,6 +383,8 @@ let cmdline_actions =
  ]
 (* Optimization options *)
 (* -f options: come in -f and -fno- variants *)
+  @ f_opt "accumrec" option_faccumrec
+  @ f_opt "sumclosed" option_fsumclosed
   @ f_opt "tailcalls" option_ftailcalls
   @ f_opt "if-conversion" option_fifconversion
   @ f_opt "const-prop" option_fconstprop

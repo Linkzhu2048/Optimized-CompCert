@@ -27,6 +27,12 @@ Parameter generate_float_constants: unit -> bool.
 (** For value analysis.  Currently always false. *)
 Parameter va_strict: unit -> bool.
 
+(** Flag -faccumrec.  For verified accumulator recursion elimination. *)
+Parameter optim_accumrec: unit -> bool.
+
+(** Flag -fsumclosed. Verified closed-form summation after AccumRec. *)
+Parameter optim_sumclosed: unit -> bool.
+
 (** Flag -ftailcalls.  For tail call optimization. *)
 Parameter optim_tailcalls: unit -> bool.
 

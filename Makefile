@@ -183,6 +183,11 @@ BACKEND=\
   Bounds.v Stacklayout.v Stacking.v Stackingproof.v \
   Asm.v Asmgen.v Asmgenproof0.v Asmgenproof1.v Asmgenproof.v
 
+# Verified accumulator recursion (this project targets x86-64).
+ifeq ($(ARCH),x86)
+BACKEND += AccumRec.v AccumRecproof.v SumClosed.v SumClosedproof.v
+endif
+
 # C front-end modules (in cfrontend/)
 
 CFRONTEND=Ctypes.v Cop.v Csyntax.v Csem.v Ctyping.v Cstrategy.v Cexec.v \
