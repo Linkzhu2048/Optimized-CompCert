@@ -186,6 +186,9 @@ Processing options:
   -O             Optimize the compiled code [on by default]
   -O0            Do not optimize the compiled code
   -O1 -O2 -O3    Synonymous for -O
+  -O4            Enable -O optimizations, loop rotation and LICM
+  -flooprotate   Enable verified RTL loop rotation [off, enabled by -O4]
+  -flicm         Enable guarded preheader LICM [off, enabled by -O4]
   -Os            Optimize for code size in preference to code speed
   -Obranchless   Optimize to generate fewer conditional branches; try to produce
                  branch-free instruction sequences as much as possible
@@ -254,8 +257,10 @@ let optimization_options = [
   option_fredundancy; option_finline; option_finline_functions_called_once;
 ]
 
-let set_all opts () = List.iter (fun r -> r := true) opts
-let unset_all opts () = List.iter (fun r -> r := false) opts
+let set_optimization enabled rotate () =
+  List.iter (fun r -> r := enabled) optimization_options;
+  option_flooprotate := rotate;
+  option_flicm := rotate
 
 let num_source_files = ref 0
 
@@ -303,10 +308,12 @@ let cmdline_actions =
     @ DebugInit.debugging_actions @
 (* Code generation options -- more below *)
  [
-  Exact "-O0", Unit (unset_all optimization_options);
-  Exact "-O", Unit (set_all optimization_options);
-  _Regexp "-O[123]$", Unit (set_all optimization_options);
-  Exact "-Os", Set option_Osize;
+  Exact "-O0", Unit (set_optimization false false);
+  Exact "-O", Unit (set_optimization true false);
+  _Regexp "-O[123]$", Unit (set_optimization true false);
+  Exact "-O4", Unit (set_optimization true true);
+  Exact "-Os", Unit (fun () -> option_Osize := true;
+    option_flooprotate := false; option_flicm := false);
   Exact "-Obranchless", Set option_Obranchless;
   Exact "-fsmall-data", Integer(fun n -> option_small_data := n);
   Exact "-fsmall-const", Integer(fun n -> option_small_const := n);
@@ -382,6 +389,8 @@ let cmdline_actions =
 (* Optimization options *)
 (* -f options: come in -f and -fno- variants *)
   @ f_opt "tailcalls" option_ftailcalls
+  @ f_opt "looprotate" option_flooprotate
+  @ f_opt "licm" option_flicm
   @ f_opt "if-conversion" option_fifconversion
   @ f_opt "const-prop" option_fconstprop
   @ f_opt "cse" option_fcse
