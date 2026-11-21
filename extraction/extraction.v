@@ -82,6 +82,10 @@ Extract Constant SimplExpr.first_unused_ident => "Camlcoq.first_unused_ident".
 Extraction Inline SimplExpr.ret SimplExpr.error SimplExpr.bind SimplExpr.bind2.
 
 (* Compopts *)
+Extract Constant Compopts.optim_looprotate =>
+  "fun _ -> !Clflags.option_flooprotate".
+Extract Constant Compopts.optim_licm =>
+  "fun _ -> !Clflags.option_flicm".
 Extract Constant Compopts.optim_for_size =>
   "fun _ -> !Clflags.option_Osize".
 Extract Constant Compopts.va_strict =>

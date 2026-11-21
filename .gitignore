@@ -23,6 +23,7 @@
 /ccomp
 /ccomp.byte
 /ccomp.prof
+/benchmarks/
 /clightgen
 /clightgen.byte
 /tools/ndfun
