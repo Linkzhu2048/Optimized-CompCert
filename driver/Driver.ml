@@ -186,8 +186,7 @@ Processing options:
   -O             Optimize the compiled code [on by default]
   -O0            Do not optimize the compiled code
   -O1 -O2 -O3    Synonymous for -O
-  -O4            Enable -O optimizations, loop rotation and LICM
-  -flooprotate   Enable verified RTL loop rotation [off, enabled by -O4]
+  -O4            Enable -O optimizations and LICM
   -flicm         Enable guarded preheader LICM [off, enabled by -O4]
   -Os            Optimize for code size in preference to code speed
   -Obranchless   Optimize to generate fewer conditional branches; try to produce
@@ -257,10 +256,9 @@ let optimization_options = [
   option_fredundancy; option_finline; option_finline_functions_called_once;
 ]
 
-let set_optimization enabled rotate () =
+let set_optimization enabled licm () =
   List.iter (fun r -> r := enabled) optimization_options;
-  option_flooprotate := rotate;
-  option_flicm := rotate
+  option_flicm := licm
 
 let num_source_files = ref 0
 
@@ -313,7 +311,7 @@ let cmdline_actions =
   _Regexp "-O[123]$", Unit (set_optimization true false);
   Exact "-O4", Unit (set_optimization true true);
   Exact "-Os", Unit (fun () -> option_Osize := true;
-    option_flooprotate := false; option_flicm := false);
+    option_flicm := false);
   Exact "-Obranchless", Set option_Obranchless;
   Exact "-fsmall-data", Integer(fun n -> option_small_data := n);
   Exact "-fsmall-const", Integer(fun n -> option_small_const := n);
@@ -389,7 +387,6 @@ let cmdline_actions =
 (* Optimization options *)
 (* -f options: come in -f and -fno- variants *)
   @ f_opt "tailcalls" option_ftailcalls
-  @ f_opt "looprotate" option_flooprotate
   @ f_opt "licm" option_flicm
   @ f_opt "if-conversion" option_fifconversion
   @ f_opt "const-prop" option_fconstprop

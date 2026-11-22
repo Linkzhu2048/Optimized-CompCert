@@ -20,9 +20,6 @@
 (** Flag [-Os].  For instruction selection (mainly). *)
 Parameter optim_for_size: unit -> bool.
 
-(** Flag [-O4].  For restricted RTL loop rotation. *)
-Parameter optim_looprotate: unit -> bool.
-
 (** Flag [-flicm], enabled by [-O4]. *)
 Parameter optim_licm: unit -> bool.
 

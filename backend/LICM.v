@@ -9,7 +9,50 @@
     traversal without reordering operations. Later iterations reuse the
     computed result. Bounded repetition supports dependent expressions. *)
 
-Require Import Coqlib Maps AST Op Registers RTL LoopRotate.
+Require Import Coqlib Maps AST Op Registers RTL.
+
+(** Bounded reachability and fresh nodes for region preparation. *)
+Fixpoint reaches_latch (fuel: nat) (f: function) (stop header: node)
+                      (work: list node) (seen: PTree.t unit) : bool :=
+  match work with
+  | nil => false
+  | pc :: rest =>
+      if peq pc stop then true else
+      match fuel with
+      | O => false
+      | S fuel' =>
+          if peq pc header then reaches_latch fuel' f stop header rest seen else
+          match seen!pc with
+          | Some _ => reaches_latch fuel' f stop header rest seen
+          | None =>
+              let next :=
+                match f.(fn_code)!pc with
+                | Some i => successors_instr i
+                | None => nil
+                end in
+              reaches_latch fuel' f stop header (next ++ rest)
+                (PTree.set pc tt seen)
+          end
+      end
+  end.
+
+Definition lookahead := 128%nat.
+
+Definition copy_node (bound pc: node) : node := (bound + pc)%positive.
+
+Definition map_successors (rename: node -> node) (i: instruction) :=
+  match i with
+  | Inop s => Inop (rename s)
+  | Iop op args dst s => Iop op args dst (rename s)
+  | Iload chunk addr args dst s => Iload chunk addr args dst (rename s)
+  | Istore chunk addr args src s => Istore chunk addr args src (rename s)
+  | Icall sg ros args dst s => Icall sg ros args dst (rename s)
+  | Itailcall sg ros args => i
+  | Ibuiltin ef args dst s => Ibuiltin ef args dst (rename s)
+  | Icond cond args yes no => Icond cond args (rename yes) (rename no)
+  | Ijumptable arg tbl => Ijumptable arg (List.map rename tbl)
+  | Ireturn arg => i
+  end.
 
 Record candidate := Candidate {
   location: node; invariant_op: operation; operands: list reg; result: reg
@@ -93,8 +136,8 @@ Definition loop_region (f: function) (p: candidate) (s: node) :=
 
 (** The region must have a single external entrance: the candidate.
     In particular, initialization must not jump directly into the region.
-    An unrotated while header normally fails this test; its copied latch
-    allows the rotated loop to pass. These checks also handle extra CFG edges. *)
+    A while header reachable from initialization normally fails this test;
+    preparation separates that entrance from subsequent iterations. *)
 Definition valid_node (p: candidate) (body: list node) (pc: node) (i: instruction) :=
   if In_dec peq pc body then safe p i else
   if peq pc p.(location) then true else

@@ -6,7 +6,222 @@
 
 (** Semantic preservation for guarded preheader LICM. *)
 Require Import Coqlib Maps AST Linking Values Memory Globalenvs Events Smallstep.
-Require Import Op Registers RTL LoopRotate LoopRotateproof LICM.
+Require Import Op Registers RTL LICM.
+
+Lemma copy_node_injective:
+  forall bound x y, copy_node bound x = copy_node bound y -> x = y.
+Proof.
+  unfold copy_node; intros. extlia.
+Qed.
+
+Lemma copy_node_fresh:
+  forall f pc i latch,
+  f.(fn_code)!pc = Some i -> pc <> copy_node (max_pc_function f) latch.
+Proof.
+  intros. generalize (max_pc_function_sound _ _ _ H).
+  unfold copy_node; intros. extlia.
+Qed.
+
+Lemma map_successors_id:
+  forall i, map_successors (fun pc => pc) i = i.
+Proof.
+  destruct i; simpl; try reflexivity. rewrite List.map_id; reflexivity.
+Qed.
+
+(** Instruction-copy simulation for the preparation phase. *)
+Module CodeCopy.
+Section PRESERVATION.
+
+Variable transform: function -> function.
+Variable relate_pc: function -> node -> node -> Prop.
+Hypothesis instruction_at: forall f pc tpc i,
+  relate_pc f pc tpc -> f.(fn_code)!pc = Some i ->
+  exists rename,
+    (transform f).(fn_code)!tpc = Some (map_successors rename i)
+    /\ (forall s, In s (successors_instr i) -> relate_pc f s (rename s)).
+Hypothesis sig_transform: forall f, fn_sig (transform f) = fn_sig f.
+Hypothesis params_transform: forall f, fn_params (transform f) = fn_params f.
+Hypothesis stacksize_transform: forall f, fn_stacksize (transform f) = fn_stacksize f.
+Hypothesis entrypoint_match: forall f,
+  relate_pc f f.(fn_entrypoint) (transform f).(fn_entrypoint).
+Let transform_fundef := AST.transf_fundef transform.
+
+Variables prog tprog: program.
+Hypothesis TRANSL: match_program (fun ctx f tf => tf = transform_fundef f) eq prog tprog.
+Let ge := Genv.globalenv prog.
+Let tge := Genv.globalenv tprog.
+
+Lemma functions_translated:
+  forall v f,
+  Genv.find_funct ge v = Some f ->
+  Genv.find_funct tge v = Some (transform_fundef f).
+Proof (Genv.find_funct_transf TRANSL).
+
+Lemma function_ptr_translated:
+  forall v f,
+  Genv.find_funct_ptr ge v = Some f ->
+  Genv.find_funct_ptr tge v = Some (transform_fundef f).
+Proof (Genv.find_funct_ptr_transf TRANSL).
+
+Lemma symbols_preserved:
+  forall id, Genv.find_symbol tge id = Genv.find_symbol ge id.
+Proof (Genv.find_symbol_transf TRANSL).
+
+Lemma senv_preserved:
+  Senv.equiv ge tge.
+Proof (Genv.senv_transf TRANSL).
+
+Lemma sig_preserved:
+  forall f, funsig (transform_fundef f) = funsig f.
+Proof.
+  destruct f; simpl; auto.
+Qed.
+
+Lemma find_function_translated:
+  forall ros rs fd,
+  find_function ge ros rs = Some fd ->
+  find_function tge ros rs = Some (transform_fundef fd).
+Proof.
+  unfold find_function; intros. destruct ros as [r|id].
+  - eapply functions_translated; eauto.
+  - rewrite symbols_preserved. destruct (Genv.find_symbol ge id); try congruence.
+    eapply function_ptr_translated; eauto.
+Qed.
+
+Inductive match_frames: RTL.stackframe -> RTL.stackframe -> Prop :=
+  | match_frames_intro: forall res f sp pc rs tpc
+        (PC: relate_pc f pc tpc),
+      match_frames (Stackframe res f sp pc rs)
+                   (Stackframe res (transform f) sp tpc rs).
+
+Inductive match_states: RTL.state -> RTL.state -> Prop :=
+  | match_regular_states: forall stk f sp pc rs m stk' tpc
+        (STACKS: list_forall2 match_frames stk stk')
+        (PC: relate_pc f pc tpc),
+      match_states (State stk f sp pc rs m)
+                   (State stk' (transform f) sp tpc rs m)
+  | match_callstates: forall stk f args m stk'
+        (STACKS: list_forall2 match_frames stk stk'),
+      match_states (Callstate stk f args m)
+                   (Callstate stk' (transform_fundef f) args m)
+  | match_returnstates: forall stk v m stk'
+        (STACKS: list_forall2 match_frames stk stk'),
+      match_states (Returnstate stk v m) (Returnstate stk' v m).
+
+Ltac TRANSF_AT :=
+  match goal with
+  | [ AT: (fn_code ?f)!?pc = Some ?i, PC: relate_pc ?f ?pc ?tpc |- _ ] =>
+      destruct (instruction_at f pc tpc i PC AT)
+        as [rename [CODE SUCC]]; simpl map_successors in CODE; simpl in SUCC
+  end.
+
+Lemma step_simulation:
+  forall S1 t S2, RTL.step ge S1 t S2 ->
+  forall S1', match_states S1 S1' ->
+  exists S2', RTL.step tge S1' t S2' /\ match_states S2 S2'.
+Proof.
+  induction 1; intros S1' MS; inv MS; try TRANSF_AT.
+  - (* nop *)
+    econstructor; split. eapply exec_Inop; eauto.
+    constructor; eauto.
+  - (* operation *)
+    econstructor; split.
+    eapply exec_Iop; eauto.
+      instantiate (1 := v). rewrite <- H0.
+      apply eval_operation_preserved. exact symbols_preserved.
+    constructor; eauto.
+  - (* load *)
+    assert (eval_addressing tge sp addr rs ## args = Some a).
+    { rewrite <- H0. apply eval_addressing_preserved. exact symbols_preserved. }
+    econstructor; split. eapply exec_Iload; eauto.
+    constructor; eauto.
+  - (* store *)
+    assert (eval_addressing tge sp addr rs ## args = Some a).
+    { rewrite <- H0. apply eval_addressing_preserved. exact symbols_preserved. }
+    econstructor; split. eapply exec_Istore; eauto.
+    constructor; eauto.
+  - (* call *)
+    econstructor; split.
+    eapply exec_Icall with (fd := transform_fundef fd); eauto.
+      eapply find_function_translated; eauto.
+      apply sig_preserved.
+    constructor. constructor; eauto. constructor; eauto.
+  - (* tail call *)
+    econstructor; split.
+    eapply exec_Itailcall with (fd := transform_fundef fd); eauto.
+      eapply find_function_translated; eauto.
+      apply sig_preserved.
+      rewrite stacksize_transform; eauto.
+    constructor; eauto.
+  - (* builtin *)
+    econstructor; split.
+    eapply exec_Ibuiltin; eauto.
+      eapply eval_builtin_args_preserved with (ge1 := ge); eauto.
+      exact symbols_preserved.
+      eapply external_call_symbols_preserved; eauto. apply senv_preserved.
+    constructor; eauto.
+  - (* condition *)
+    econstructor; split. eapply exec_Icond; eauto.
+    constructor; eauto. destruct b; apply SUCC; auto.
+  - (* jump table *)
+    econstructor; split.
+    eapply exec_Ijumptable; eauto.
+      rewrite list_nth_z_map, H1. simpl; eauto.
+    constructor; eauto. apply SUCC. eapply list_nth_z_in; eauto.
+  - (* return *)
+    econstructor; split. eapply exec_Ireturn; eauto.
+    rewrite stacksize_transform; eauto.
+    constructor; eauto.
+  - (* internal function *)
+    simpl. econstructor; split.
+    { eapply exec_function_internal.
+      - rewrite sig_transform; eauto.
+      - rewrite stacksize_transform; eauto. }
+    rewrite params_transform.
+    constructor; eauto.
+  - (* external function *)
+    econstructor; split. eapply exec_function_external; eauto.
+      eapply external_call_symbols_preserved; eauto. apply senv_preserved.
+    constructor; eauto.
+  - (* return to caller *)
+    inv STACKS. inv H1.
+    econstructor; split. eapply exec_return; eauto.
+    constructor; eauto.
+Qed.
+
+Lemma transf_initial_states:
+  forall S1, RTL.initial_state prog S1 ->
+  exists S2, RTL.initial_state tprog S2 /\ match_states S1 S2.
+Proof.
+  intros. inv H. econstructor; split.
+  econstructor.
+  - eapply (Genv.init_mem_transf TRANSL); eauto.
+  - rewrite symbols_preserved. unfold fundef.
+    rewrite (match_program_main TRANSL). eauto.
+  - eapply function_ptr_translated; eauto.
+  - rewrite <- H3; apply sig_preserved.
+  - constructor. constructor.
+Qed.
+
+Lemma transf_final_states:
+  forall S1 S2 r,
+  match_states S1 S2 -> RTL.final_state S1 r -> RTL.final_state S2 r.
+Proof.
+  intros. inv H0. inv H. inv STACKS. constructor.
+Qed.
+
+Theorem code_copy_correct:
+  forward_simulation (RTL.semantics prog) (RTL.semantics tprog).
+Proof.
+  eapply forward_simulation_step.
+  - apply senv_preserved.
+  - eexact transf_initial_states.
+  - eexact transf_final_states.
+  - exact step_simulation.
+Qed.
+
+End PRESERVATION.
+End CodeCopy.
 
 Definition eliminate_match_prog (p tp: RTL.program) :=
   match_program (fun ctx f tf => tf = eliminate_fundef f) eq p tp.
@@ -479,7 +694,7 @@ Qed.
 Lemma prepare_program_correct: forall p,
   forward_simulation (RTL.semantics p) (RTL.semantics (prepare_program p)).
 Proof.
-  intros. eapply code_copy_correct with
+  intros. eapply CodeCopy.code_copy_correct with
     (transform := prepare_function) (relate_pc := peel_pc).
   - exact prepare_instruction_at.
   - intros; unfold prepare_function; destruct (peel_selected f) as [[c ns]|]; reflexivity.

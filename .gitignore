@@ -23,7 +23,9 @@
 /ccomp
 /ccomp.byte
 /ccomp.prof
-/benchmarks/
+/benchmarks/_build/
+/benchmarks/results/
+/benchmarks/__pycache__/
 /clightgen
 /clightgen.byte
 /tools/ndfun
