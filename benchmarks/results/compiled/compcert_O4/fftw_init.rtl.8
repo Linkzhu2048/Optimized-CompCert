@@ -1,0 +1,76 @@
+init_input(x1) {
+    9:	x2 = 0
+    8:	x4 = input + 0 (long)
+    7:	x5 = long32signed(x2)
+    6:	x7 = x2 + x1 + 0 (int)
+    5:	x6 = floatofint(x7)
+    4:	float64[x4 + x5 * 8 + 0] = x6
+    3:	x2 = x2 + 1 (int)
+    2:	if (x2 <s 1024) goto 8 else goto 1
+    1:	return
+}
+
+main(x2, x1) {
+   55:	if (x2 >s 1) goto 54 else goto 51
+   54:	x36 = int64[x1 + 8]
+   53:	x4 = "atoi"(x36)
+   52:	x3 = x4
+	goto 50
+   51:	x3 = 65536
+   50:	x17 = x3
+   49:	if (x2 >s 2) goto 48 else goto 43
+   48:	x33 = int64[x1 + 16]
+   47:	x34 = 0L
+   46:	x35 = 10
+   45:	x6 = "strtoul"(x33, x34, x35)
+   44:	x5 = x6
+	goto 42
+   43:	x5 = 4L
+   42:	x16 = x5
+   41:	if (x2 >s 3) goto 40 else goto 35
+   40:	x30 = int64[x1 + 24]
+   39:	x31 = 0L
+   38:	x32 = 10
+   37:	x8 = "strtoul"(x30, x31, x32)
+   36:	x7 = lowlong(x8)
+	goto 34
+   35:	x7 = 2048
+   34:	x15 = x7
+   33:	x14 = 0
+   32:	if (x17 <s 0) goto 5 else goto 31
+   31:	nop
+   30:	if (x17 >s 1048576) goto 4 else goto 29
+   29:	nop
+   28:	if (x16 ==lu 0) goto 3 else goto 27
+   27:	nop
+   26:	if (x16 >lu 1000000) goto 2 else goto 25
+   25:	x13 = 0L
+   24:	if (x13 <lu x16) goto 23 else goto 8
+   23:	x12 = 0
+   22:	if (x12 <s x17) goto 21 else goto 9
+   21:	x28 = x15 & 65535
+   20:	x29 = "init_input"(x28)
+   19:	x25 = input + 0 (long)
+   18:	x27 = x15 & 1023
+   17:	x26 = long32unsigned(x27)
+   16:	x24 = float64[x25 + x26 * 8 + 0]
+   15:	x23 = longoffloat(x24)
+   14:	x22 = lowlong(x23)
+   13:	x14 = x14 + x22 + 0 (int)
+   12:	x21 = x15 * 1664525
+   11:	x15 = x21 + x14 + 1013904223 (int)
+   10:	x12 = x12 + 1 (int)
+	goto 22
+    9:	x13 = x13 + 1 (long)
+	goto 24
+    8:	x19 = __stringlit_1 + 0 (long)
+    7:	x20 = "printf"(x19, x14)
+    6:	x18 = 0
+	goto 1
+    5:	nop
+    4:	nop
+    3:	nop
+    2:	x18 = 2
+    1:	return x18
+}
+

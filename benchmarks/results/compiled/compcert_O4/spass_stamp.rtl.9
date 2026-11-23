@@ -1,0 +1,106 @@
+term_StampOverflow(x1) {
+	goto 30
+   52:	x14 = x14
+	goto 21
+   30:	x3 = 0
+   29:	x20 = &term_STAMP
+   28:	x19 = int32[x20 + 0]
+   27:	if (x19 ==u 4294967295) goto 26 else goto 11
+   26:	x17 = x20
+   25:	x18 = 0
+   24:	int32[x17 + 0] = x18
+   23:	x2 = 0
+   22:	x14 = term_STAMPOVERFLOW + 0 (long)
+   21:	x15 = long32unsigned(x2)
+   20:	x16 = 1
+   19:	int32[x14 + x15 * 4 + 0] = x16
+   18:	x2 = x2 + 1 (int)
+   17:	if (x2 <u 20) goto 52 else goto 16
+   16:	x11 = term_STAMPOVERFLOW + 0 (long)
+   15:	x12 = long32unsigned(x1)
+   14:	x13 = 0
+   13:	int32[x11 + x12 * 4 + 0] = x13
+   12:	x3 = 1
+	goto 2
+   11:	x9 = term_STAMPOVERFLOW + 0 (long)
+   10:	x10 = long32unsigned(x1)
+    9:	x8 = int32[x9 + x10 * 4 + 0]
+    8:	if (x8 !=u 0) goto 7 else goto 2
+    7:	x5 = term_STAMPOVERFLOW + 0 (long)
+    6:	x6 = x10
+    5:	x7 = 0
+    4:	int32[x5 + x6 * 4 + 0] = x7
+    3:	x3 = 1
+    2:	x4 = x3
+    1:	return x4
+}
+
+main(x2, x1) {
+   60:	if (x2 >s 1) goto 59 else goto 56
+   59:	x40 = int64[x1 + 8]
+   58:	x4 = "atoi"(x40)
+   57:	x3 = x4
+	goto 55
+   56:	x3 = 65536
+   55:	x19 = x3
+   54:	if (x2 >s 2) goto 53 else goto 48
+   53:	x37 = int64[x1 + 16]
+   52:	x38 = 0L
+   51:	x39 = 10
+   50:	x6 = "strtoul"(x37, x38, x39)
+   49:	x5 = x6
+	goto 47
+   48:	x5 = 256L
+   47:	x18 = x5
+   46:	if (x2 >s 3) goto 45 else goto 40
+   45:	x34 = int64[x1 + 24]
+   44:	x35 = 0L
+   43:	x36 = 10
+   42:	x8 = "strtoul"(x34, x35, x36)
+   41:	x7 = lowlong(x8)
+	goto 39
+   40:	x7 = 2048
+   39:	x17 = x7
+   38:	x16 = 0
+   37:	if (x19 <s 0) goto 5 else goto 36
+   36:	nop
+   35:	if (x19 >s 1048576) goto 4 else goto 34
+   34:	nop
+   33:	if (x18 ==lu 0) goto 3 else goto 32
+   32:	nop
+   31:	if (x18 >lu 1000000) goto 2 else goto 30
+   30:	x15 = 0L
+   29:	if (x15 <lu x18) goto 28 else goto 8
+   28:	x14 = 0
+   27:	if (x14 <s x19) goto 26 else goto 9
+   26:	x32 = -1
+   25:	x33 = 0
+   24:	x12 = x17 & 0x3 == 0 ?int x32 : x33
+   23:	x31 = &term_STAMP
+   22:	int32[x31 + 0] = x12
+   21:	x25 = x17
+   20:	x30 = -858993459
+   19:	x29 = mulhu(x25,x30)
+   18:	x27 = x29 >>u 4
+   17:	x28 = x27 << 4
+   16:	x26 = x28 + x27 * 4 + 0 (int)
+   15:	x24 = x25 - x26
+   14:	x13 = "term_StampOverflow"(x24)
+   13:	x16 = x16 + x13 + 0 (int)
+   12:	x23 = x17 * 1664525
+   11:	x17 = x23 + 1013904223 (int)
+   10:	x14 = x14 + 1 (int)
+	goto 27
+    9:	x15 = x15 + 1 (long)
+	goto 29
+    8:	x21 = __stringlit_1 + 0 (long)
+    7:	x22 = "printf"(x21, x16)
+    6:	x20 = 0
+	goto 1
+    5:	nop
+    4:	nop
+    3:	nop
+    2:	x20 = 2
+    1:	return x20
+}
+

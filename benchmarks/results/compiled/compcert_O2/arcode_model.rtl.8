@@ -1,0 +1,202 @@
+SymbolCountToProbabilityRanges() {
+   28:	x21 = &ranges
+   27:	x22 = 0
+   26:	int16u[x21 + 0] = x22
+   25:	x19 = x21
+   24:	x20 = 1
+   23:	int16u[x19 + 514] = x20
+   22:	x14 = &cumulativeProb
+   21:	x18 = x14
+   20:	x17 = int16u[x18 + 0]
+   19:	x16 = x17 + 1 (int)
+   18:	x15 = x16
+   17:	int16u[x14 + 0] = x15
+   16:	x1 = 1
+   15:	x3 = &ranges
+   14:	x4 = long32signed(x1)
+   13:	x12 = x3
+   12:	x13 = x4
+   11:	x7 = int16u[x12 + x13 * 2 + 0]
+   10:	x9 = x12
+    9:	x11 = x1 + -1 (int)
+    8:	x10 = long32signed(x11)
+    7:	x8 = int16u[x9 + x10 * 2 + 0]
+    6:	x6 = x7 + x8 + 0 (int)
+    5:	x5 = x6
+    4:	int16u[x3 + x4 * 2 + 0] = x5
+    3:	x1 = x1 + 1 (int)
+    2:	if (x1 <=s 257) goto 15 else goto 1
+    1:	return
+}
+
+BuildProbabilityRangeList(x2, x1) {
+   79:	x4 = 0L
+   78:	x6 = 0
+   77:	x57 = stack(0) (long)
+   76:	x58 = long32signed(x6)
+   75:	x59 = 0L
+   74:	int64[x57 + x58 * 8 + 0] = x59
+   73:	x6 = x6 + 1 (int)
+   72:	if (x6 <s 256) goto 77 else goto 71
+   71:	x5 = 0
+   70:	if (x5 <s x1) goto 69 else goto 56
+   69:	x47 = stack(0) (long)
+   68:	x56 = long32signed(x5)
+   67:	x55 = int8u[x2 + x56 + 0]
+   66:	x48 = long32signed(x55)
+   65:	x51 = stack(0) (long)
+   64:	nop
+   63:	nop
+   62:	x52 = x48
+   61:	x50 = int64[x51 + x52 * 8 + 0]
+   60:	x49 = x50 + 1 (long)
+   59:	int64[x47 + x48 * 8 + 0] = x49
+   58:	x4 = x4 + 1 (long)
+   57:	x5 = x5 + 1 (int)
+	goto 70
+   56:	if (x4 >=lu 16384) goto 55 else goto 31
+   55:	x46 = x4 >>lu 14
+   54:	x3 = x46 + 1 (long)
+   53:	x6 = 0
+   52:	x44 = stack(0) (long)
+   51:	x45 = long32signed(x6)
+   50:	x43 = int64[x44 + x45 * 8 + 0]
+   49:	if (x43 >lu x3) goto 40 else goto 48
+   48:	nop
+   47:	x42 = x45
+   46:	x40 = x43
+   45:	if (x40 !=lu 0) goto 44 else goto 33
+   44:	x37 = stack(0) (long)
+   43:	x38 = x42
+   42:	x39 = 1L
+   41:	int64[x37 + x38 * 8 + 0] = x39
+	goto 33
+   40:	x31 = stack(0) (long)
+   39:	x32 = x45
+   38:	nop
+   37:	nop
+   36:	x34 = x43
+   35:	x33 = x34 /lu x3
+   34:	int64[x31 + x32 * 8 + 0] = x33
+   33:	x6 = x6 + 1 (int)
+   32:	if (x6 <s 256) goto 52 else goto 31
+   31:	x29 = &ranges
+   30:	x30 = 0
+   29:	int16u[x29 + 0] = x30
+   28:	x27 = &cumulativeProb
+   27:	x28 = 0
+   26:	int16u[x27 + 0] = x28
+   25:	x6 = 0
+   24:	x19 = &ranges
+   23:	x26 = x6 + 1 (int)
+   22:	x20 = long32signed(x26)
+   21:	x24 = stack(0) (long)
+   20:	x25 = long32signed(x6)
+   19:	x23 = int64[x24 + x25 * 8 + 0]
+   18:	x22 = lowlong(x23)
+   17:	x21 = x22
+   16:	int16u[x19 + x20 * 2 + 0] = x21
+   15:	x9 = &cumulativeProb
+   14:	x18 = x9
+   13:	x17 = int16u[x18 + 0]
+   12:	x13 = long32unsigned(x17)
+   11:	nop
+   10:	nop
+    9:	x14 = x23
+    8:	x12 = x13 + x14 + 0 (long)
+    7:	x11 = lowlong(x12)
+    6:	x10 = x11
+    5:	int16u[x9 + 0] = x10
+    4:	x6 = x26
+    3:	if (x6 <s 256) goto 24 else goto 2
+    2:	x8 = "SymbolCountToProbabilityRanges"()
+    1:	return
+}
+
+main(x2, x1) {
+   77:	if (x2 >s 1) goto 76 else goto 73
+   76:	x51 = int64[x1 + 8]
+   75:	x4 = "atoi"(x51)
+   74:	x3 = x4
+	goto 72
+   73:	x3 = 65536
+   72:	x21 = x3
+   71:	if (x2 >s 2) goto 70 else goto 65
+   70:	x48 = int64[x1 + 16]
+   69:	x49 = 0L
+   68:	x50 = 10
+   67:	x6 = "strtoul"(x48, x49, x50)
+   66:	x5 = x6
+	goto 64
+   65:	x5 = 1024L
+   64:	x20 = x5
+   63:	if (x2 >s 3) goto 62 else goto 57
+   62:	x45 = int64[x1 + 24]
+   61:	x46 = 0L
+   60:	x47 = 10
+   59:	x8 = "strtoul"(x45, x46, x47)
+   58:	x7 = lowlong(x8)
+	goto 56
+   57:	x7 = 2048
+   56:	x19 = x7
+   55:	x18 = 0
+   54:	if (x21 <s 0) goto 5 else goto 53
+   53:	nop
+   52:	if (x21 >s 1048576) goto 4 else goto 51
+   51:	nop
+   50:	if (x20 ==lu 0) goto 3 else goto 49
+   49:	nop
+   48:	if (x20 >lu 1000000) goto 2 else goto 47
+   47:	x44 = long32signed(x21)
+   46:	x43 = x44 + 1 (long)
+   45:	x12 = "malloc"(x43)
+   44:	x16 = x12
+   43:	if (x16 ==lu 0) goto 42 else goto 41
+   42:	x22 = 1
+	goto 1
+   41:	x15 = 0
+   40:	if (x15 <s x21) goto 39 else goto 28
+   39:	x41 = 1
+   38:	x42 = x19 & 0x1 == 0
+   37:	x13 = x15 <s 128 ?int x41 : x42
+   36:	x40 = x15 + x19 + 0 (int)
+   35:	x38 = x40
+   34:	x39 = 0
+   33:	x14 = x13 !=u 0 ?int x38 : x39
+   32:	x36 = long32signed(x15)
+   31:	x37 = x14
+   30:	int8u[x16 + x36 + 0] = x37
+   29:	x15 = x15 + 1 (int)
+	goto 40
+   28:	x17 = 0L
+   27:	if (x17 <lu x20) goto 26 else goto 9
+   26:	x35 = "BuildProbabilityRangeList"(x16, x21)
+   25:	x15 = 0
+   24:	x33 = x18
+   23:	x34 = x33 << 5
+   22:	x29 = x33 + x34 + 0 (int)
+   21:	x31 = &ranges
+   20:	x32 = long32signed(x15)
+   19:	x30 = int16u[x31 + x32 * 2 + 0]
+   18:	x18 = x29 + x30 + 0 (int)
+   17:	x15 = x15 + 1 (int)
+   16:	if (x15 <=s 257) goto 24 else goto 15
+   15:	x28 = x19 * 1664525
+   14:	x19 = x28 + 1013904223 (int)
+   13:	x27 = x19
+   12:	x26 = x27
+   11:	int8u[x16 + 0] = x26
+   10:	x17 = x17 + 1 (long)
+	goto 27
+    9:	x24 = __stringlit_1 + 0 (long)
+    8:	x25 = "printf"(x24, x18)
+    7:	x23 = "free"(x16)
+    6:	x22 = 0
+	goto 1
+    5:	nop
+    4:	nop
+    3:	nop
+    2:	x22 = 2
+    1:	return x22
+}
+

@@ -24,7 +24,7 @@
 /ccomp.byte
 /ccomp.prof
 /benchmarks/_build/
-/benchmarks/results/
+/benchmarks/results/.work-*/
 /benchmarks/__pycache__/
 /clightgen
 /clightgen.byte
@@ -80,6 +80,8 @@
 /doc/html/
 # MacOS metadata
 .DS_Store
+# Windows download metadata
+*:Zone.Identifier
 # Keep the separately managed test repository out of this repository
 /test/
 # Coq caches

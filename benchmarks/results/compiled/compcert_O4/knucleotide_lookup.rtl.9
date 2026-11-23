@@ -1,0 +1,96 @@
+prime_capacity(x1) {
+	goto 11
+   21:	x8 = x8
+	goto 9
+   11:	x2 = 0
+   10:	x8 = ht_prime_list + 0 (long)
+    9:	x9 = long32signed(x2)
+    8:	x6 = int64[x8 + x9 * 8 + 0]
+    7:	x7 = long32signed(x1)
+    6:	if (x6 <lu x7) goto 5 else goto 4
+    5:	x2 = x2 + 1 (int)
+	goto 21
+    4:	nop
+    3:	nop
+    2:	x3 = x6
+    1:	return x3
+}
+
+main(x2, x1) {
+   67:	if (x2 >s 1) goto 66 else goto 63
+   66:	x41 = int64[x1 + 8]
+   65:	x4 = "atoi"(x41)
+   64:	x3 = x4
+	goto 62
+   63:	x3 = 65536
+   62:	x20 = x3
+   61:	if (x2 >s 2) goto 60 else goto 55
+   60:	x38 = int64[x1 + 16]
+   59:	x39 = 0L
+   58:	x40 = 10
+   57:	x6 = "strtoul"(x38, x39, x40)
+   56:	x5 = x6
+	goto 54
+   55:	x5 = 256L
+   54:	x19 = x5
+   53:	if (x2 >s 3) goto 52 else goto 47
+   52:	x35 = int64[x1 + 24]
+   51:	x36 = 0L
+   50:	x37 = 10
+   49:	x8 = "strtoul"(x35, x36, x37)
+   48:	x7 = lowlong(x8)
+	goto 46
+   47:	x7 = 2048
+   46:	x18 = x7
+   45:	x17 = 0
+   44:	if (x20 <s 0) goto 5 else goto 43
+   43:	nop
+   42:	if (x20 >s 1048576) goto 4 else goto 41
+   41:	nop
+   40:	if (x19 ==lu 0) goto 3 else goto 39
+   39:	nop
+   38:	if (x19 >lu 1000000) goto 2 else goto 37
+   37:	x34 = long32signed(x20)
+   36:	x33 = x34 * 4 + 4 (long)
+   35:	x12 = "malloc"(x33)
+   34:	x16 = x12
+   33:	if (x16 ==lu 0) goto 32 else goto 31
+   32:	x21 = 1
+	goto 1
+   31:	x14 = 0
+   30:	if (x14 <s x20) goto 29 else goto 24
+   29:	x30 = long32signed(x14)
+   28:	x32 = x14 * -1640531535
+   27:	x31 = x32 + x18 + 0 (int)
+   26:	int32[x16 + x30 * 4 + 0] = x31
+   25:	x14 = x14 + 1 (int)
+	goto 30
+   24:	x15 = 0L
+   23:	if (x15 <lu x19) goto 22 else goto 9
+   22:	x14 = 0
+   21:	if (x14 <s x20) goto 20 else goto 13
+   20:	x29 = long32signed(x14)
+   19:	x28 = int32[x16 + x29 * 4 + 0]
+   18:	x27 = x28 & 2147483647
+   17:	x13 = "prime_capacity"(x27)
+   16:	x26 = lowlong(x13)
+   15:	x17 = x17 + x26 + 0 (int)
+   14:	x14 = x14 + 1 (int)
+	goto 21
+   13:	x25 = x18 * 1664525
+   12:	x18 = x25 + 1013904223 (int)
+   11:	int32[x16 + 0] = x18
+   10:	x15 = x15 + 1 (long)
+	goto 23
+    9:	x23 = __stringlit_1 + 0 (long)
+    8:	x24 = "printf"(x23, x17)
+    7:	x22 = "free"(x16)
+    6:	x21 = 0
+	goto 1
+    5:	nop
+    4:	nop
+    3:	nop
+    2:	x21 = 2
+    1:	return x21
+}
+

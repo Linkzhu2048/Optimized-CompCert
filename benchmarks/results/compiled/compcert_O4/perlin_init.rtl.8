@@ -1,0 +1,93 @@
+init() {
+   14:	x2 = 0
+   13:	x9 = permutation + 0 (long)
+   12:	x10 = long32signed(x2)
+   11:	x1 = int32[x9 + x10 * 4 + 0]
+   10:	x7 = p + 0 (long)
+    9:	x8 = x10
+    8:	int32[x7 + x8 * 4 + 0] = x1
+    7:	x4 = p + 0 (long)
+    6:	x6 = x2 + 256 (int)
+    5:	x5 = long32signed(x6)
+    4:	int32[x4 + x5 * 4 + 0] = x1
+    3:	x2 = x2 + 1 (int)
+    2:	if (x2 <s 256) goto 13 else goto 1
+    1:	return
+}
+
+main(x2, x1) {
+   67:	if (x2 >s 1) goto 66 else goto 63
+   66:	x46 = int64[x1 + 8]
+   65:	x4 = "atoi"(x46)
+   64:	x3 = x4
+	goto 62
+   63:	x3 = 65536
+   62:	x20 = x3
+   61:	if (x2 >s 2) goto 60 else goto 55
+   60:	x43 = int64[x1 + 16]
+   59:	x44 = 0L
+   58:	x45 = 10
+   57:	x6 = "strtoul"(x43, x44, x45)
+   56:	x5 = x6
+	goto 54
+   55:	x5 = 16L
+   54:	x19 = x5
+   53:	if (x2 >s 3) goto 52 else goto 47
+   52:	x40 = int64[x1 + 24]
+   51:	x41 = 0L
+   50:	x42 = 10
+   49:	x8 = "strtoul"(x40, x41, x42)
+   48:	x7 = lowlong(x8)
+	goto 46
+   47:	x7 = 2048
+   46:	x18 = x7
+   45:	x17 = 0
+   44:	if (x20 <s 0) goto 5 else goto 43
+   43:	nop
+   42:	if (x20 >s 1048576) goto 4 else goto 41
+   41:	nop
+   40:	if (x19 ==lu 0) goto 3 else goto 39
+   39:	nop
+   38:	if (x19 >lu 1000000) goto 2 else goto 37
+   37:	x16 = 0L
+   36:	if (x16 <lu x19) goto 35 else goto 8
+   35:	x15 = 0
+   34:	if (x15 <s x20) goto 33 else goto 9
+   33:	x14 = x18 & 255
+   32:	x39 = x18 >>u 8
+   31:	x13 = x39 & 255
+   30:	x37 = permutation + 0 (long)
+   29:	x38 = long32signed(x14)
+   28:	x12 = int32[x37 + x38 * 4 + 0]
+   27:	x32 = permutation + 0 (long)
+   26:	x33 = x38
+   25:	x35 = permutation + 0 (long)
+   24:	x36 = long32signed(x13)
+   23:	x34 = int32[x35 + x36 * 4 + 0]
+   22:	int32[x32 + x33 * 4 + 0] = x34
+   21:	x30 = permutation + 0 (long)
+   20:	x31 = x36
+   19:	int32[x30 + x31 * 4 + 0] = x12
+   18:	x29 = "init"()
+   17:	x26 = p + 0 (long)
+   16:	x28 = x18 & 511
+   15:	x27 = long32unsigned(x28)
+   14:	x25 = int32[x26 + x27 * 4 + 0]
+   13:	x17 = x17 + x25 + 0 (int)
+   12:	x24 = x18 * 1664525
+   11:	x18 = x24 + x17 + 1013904223 (int)
+   10:	x15 = x15 + 1 (int)
+	goto 34
+    9:	x16 = x16 + 1 (long)
+	goto 36
+    8:	x22 = __stringlit_1 + 0 (long)
+    7:	x23 = "printf"(x22, x17)
+    6:	x21 = 0
+	goto 1
+    5:	nop
+    4:	nop
+    3:	nop
+    2:	x21 = 2
+    1:	return x21
+}
+

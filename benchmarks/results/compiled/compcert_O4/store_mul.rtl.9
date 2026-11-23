@@ -1,0 +1,124 @@
+scan(x4, x3, x2, x1) {
+	goto 15
+   40:	x5 = x5
+	goto 11
+   28:	if (x6 <s x2) goto 12 else goto 2
+   26:	x11 = long32signed(x6)
+   25:	x14 = x11
+   24:	x13 = int32[x4 + x14 * 4 + 0]
+   23:	x12 = x13 ^ x5
+   22:	int32[x3 + x11 * 4 + 0] = x12
+   21:	nop
+   20:	x9 = x12
+   19:	x7 = x7 + x9 + 0 (int)
+   18:	x6 = x6 + 1 (int)
+	goto 28
+   15:	x7 = x1
+   14:	x6 = 0
+	goto 28
+   13:	if (x6 <s x2) goto 40 else goto 2
+   12:	x5 = x1 * x2
+   11:	x11 = long32signed(x6)
+   10:	x14 = x11
+    9:	x13 = int32[x4 + x14 * 4 + 0]
+    8:	x12 = x13 ^ x5
+    7:	int32[x3 + x11 * 4 + 0] = x12
+    6:	nop
+    5:	x9 = x12
+    4:	x7 = x7 + x9 + 0 (int)
+    3:	x6 = x6 + 1 (int)
+	goto 13
+    2:	x8 = x7
+    1:	return x8
+}
+
+main(x2, x1) {
+   79:	if (x2 >s 1) goto 78 else goto 75
+   78:	x50 = int64[x1 + 8]
+   77:	x4 = "atoi"(x50)
+   76:	x3 = x4
+	goto 74
+   75:	x3 = 65536
+   74:	x23 = x3
+   73:	if (x2 >s 2) goto 72 else goto 67
+   72:	x47 = int64[x1 + 16]
+   71:	x48 = 0L
+   70:	x49 = 10
+   69:	x6 = "strtoul"(x47, x48, x49)
+   68:	x5 = x6
+	goto 66
+   67:	x5 = 4096L
+   66:	x22 = x5
+   65:	if (x2 >s 3) goto 64 else goto 59
+   64:	x44 = int64[x1 + 24]
+   63:	x45 = 0L
+   62:	x46 = 10
+   61:	x8 = "strtoul"(x44, x45, x46)
+   60:	x7 = lowlong(x8)
+	goto 58
+   59:	x7 = 2048
+   58:	x21 = x7
+   57:	x20 = 0
+   56:	if (x23 <s 0) goto 5 else goto 55
+   55:	nop
+   54:	if (x23 >s 1048576) goto 4 else goto 53
+   53:	nop
+   52:	if (x22 ==lu 0) goto 3 else goto 51
+   51:	nop
+   50:	if (x22 >lu 1000000) goto 2 else goto 49
+   49:	x43 = long32signed(x23)
+   48:	x42 = x43 * 4 + 4 (long)
+   47:	x12 = "malloc"(x42)
+   46:	x19 = x12
+   45:	x41 = long32signed(x23)
+   44:	x40 = x41 * 4 + 4 (long)
+   43:	x13 = "malloc"(x40)
+   42:	x18 = x13
+   41:	if (x19 ==lu 0) goto 9 else goto 40
+   40:	nop
+   39:	if (x18 ==lu 0) goto 8 else goto 38
+   38:	x16 = 0
+   37:	if (x16 <s x23) goto 36 else goto 31
+   36:	x35 = long32signed(x16)
+   35:	x37 = x16 * -1640531535
+   34:	x36 = x37 + x21 + 0 (int)
+   33:	int32[x19 + x35 * 4 + 0] = x36
+   32:	x16 = x16 + 1 (int)
+	goto 37
+   31:	x17 = 0L
+   30:	if (x17 <lu x22) goto 29 else goto 23
+   29:	x15 = "scan"(x19, x18, x23, x21)
+   28:	x20 = x20 + x15 + 0 (int)
+   27:	x34 = x21 * 1664525
+   26:	x21 = x34 + 1013904223 (int)
+   25:	int32[x19 + 0] = x21
+   24:	x17 = x17 + 1 (long)
+	goto 30
+   23:	x16 = 0
+   22:	if (x16 <s x23) goto 21 else goto 14
+   21:	x32 = x20
+   20:	x33 = x32 << 5
+   19:	x29 = x32 + x33 + 0 (int)
+   18:	x31 = long32signed(x16)
+   17:	x30 = int32[x18 + x31 * 4 + 0]
+   16:	x20 = x29 + x30 + 0 (int)
+   15:	x16 = x16 + 1 (int)
+	goto 22
+   14:	x28 = "free"(x18)
+   13:	x26 = __stringlit_1 + 0 (long)
+   12:	x27 = "printf"(x26, x20)
+   11:	x25 = "free"(x19)
+   10:	x24 = 0
+	goto 1
+    9:	nop
+    8:	x39 = "free"(x19)
+    7:	x38 = "free"(x18)
+    6:	x24 = 1
+	goto 1
+    5:	nop
+    4:	nop
+    3:	nop
+    2:	x24 = 2
+    1:	return x24
+}
+
